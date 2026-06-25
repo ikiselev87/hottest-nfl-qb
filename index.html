@@ -32,13 +32,24 @@
     border-radius:10px; cursor:pointer; transition:.15s;
   }
   button.btn:hover{border-color:var(--accent); color:var(--accent)}
-  button.btn.primary{background:var(--accent); color:#1a1300; border-color:var(--accent)}
+  button.btn.primary{background:var(--accent); color:#1a1300; border-color:var(--accent); font-weight:800}
+  button.btn.primary:hover{filter:brightness(1.05); color:#1a1300}
   .stat{font-size:12px; color:var(--muted); align-self:center; white-space:nowrap}
   .stat b{color:var(--txt)}
 
-  main{max-width:1050px; margin:0 auto; padding:26px 18px 60px}
-  .prompt{text-align:center; color:var(--muted); font-size:14px; margin-bottom:18px}
+  main{max-width:1050px; margin:0 auto; padding:24px 18px 60px}
+  .banner{text-align:center; margin-bottom:6px}
+  .banner .phase{display:inline-block; font-size:12px; font-weight:800; letter-spacing:1.2px;
+                 text-transform:uppercase; color:#1a1300; background:var(--accent);
+                 padding:4px 12px; border-radius:999px}
+  .banner .phase.finals{background:var(--win)}
+  .prompt{text-align:center; color:var(--muted); font-size:14px; margin:12px 0 18px}
   .prompt b{color:var(--accent)}
+
+  /* progress bar */
+  .pbar{max-width:420px; margin:0 auto 16px; height:7px; background:var(--card);
+        border:1px solid var(--line); border-radius:999px; overflow:hidden}
+  .pbar > div{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--win)); transition:width .3s}
 
   .arena{display:grid; grid-template-columns:1fr 64px 1fr; gap:14px; align-items:stretch}
   .vs{display:flex; align-items:center; justify-content:center; font-weight:900;
@@ -63,10 +74,7 @@
     position:relative; min-height:300px;
   }
   .photo img{max-height:330px; width:auto; display:block; filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
-  .photo .fallback{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    height:100%; width:100%; gap:8px;
-  }
+  .photo .fallback{display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; width:100%}
   .photo .fallback .initials{
     font-size:74px; font-weight:900; color:rgba(255,255,255,.92);
     width:140px; height:140px; border-radius:50%; background:rgba(0,0,0,.28);
@@ -80,23 +88,37 @@
   kbd{background:var(--card); border:1px solid var(--line); border-bottom-width:2px;
       border-radius:6px; padding:1px 7px; font-size:12px; font-family:inherit}
 
-  /* leaderboard overlay */
-  .overlay{position:fixed; inset:0; background:rgba(6,9,18,.78); backdrop-filter:blur(6px);
+  /* overlays */
+  .overlay{position:fixed; inset:0; background:rgba(6,9,18,.82); backdrop-filter:blur(6px);
            display:none; align-items:flex-start; justify-content:center; z-index:20; padding:40px 16px; overflow:auto}
   .overlay.open{display:flex}
   .board{background:var(--bg2); border:1px solid var(--line); border-radius:18px;
-         width:100%; max-width:620px; padding:8px}
-  .board .bhead{display:flex; align-items:center; justify-content:space-between; padding:14px 16px}
-  .board h2{font-size:18px}
-  .row{display:grid; grid-template-columns:42px 1fr 86px 70px; align-items:center;
-       gap:8px; padding:9px 14px; border-top:1px solid var(--line); font-size:14px}
-  .row.head{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; border-top:none}
-  .row .rk{font-weight:800; color:var(--accent); text-align:center}
-  .row .who b{font-weight:700}
-  .row .who span{color:var(--muted); font-size:12px}
-  .row .rec{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums}
-  .row .rt{text-align:right; font-weight:700; font-variant-numeric:tabular-nums}
-  .row.gold .rk{color:#ffd84d} .row.silver .rk{color:#cfd8ec} .row.bronze .rk{color:#e6a86b}
+         width:100%; max-width:560px; padding:22px 20px 24px; text-align:center}
+  .board h2{font-size:22px; margin-bottom:8px}
+  .board p.sub{color:var(--muted); font-size:14px; margin-bottom:18px; line-height:1.5}
+  .board p.sub b{color:var(--txt)}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:22px}
+  .chip{background:var(--card); border:1px solid var(--line); border-radius:999px;
+        padding:7px 13px; font-size:13px; font-weight:600}
+  .chip span{color:var(--muted); font-weight:500; font-size:11px}
+
+  /* podium results */
+  .prow{display:grid; grid-template-columns:50px 56px 1fr auto; align-items:center;
+        gap:12px; padding:11px 8px; border-top:1px solid var(--line); text-align:left}
+  .prow:first-of-type{border-top:none}
+  .prow .rk{font-size:24px; font-weight:900; text-align:center; color:var(--muted)}
+  .prow.gold .rk{color:#ffd84d} .prow.silver .rk{color:#cfd8ec} .prow.bronze .rk{color:#e6a86b}
+  .prow .av{width:54px; height:54px; border-radius:50%; overflow:hidden; background:#0d1322;
+            display:flex; align-items:flex-end; justify-content:center; border:1px solid var(--line)}
+  .prow .av img{width:100%; height:auto; transform:translateY(4px)}
+  .prow .av .ini{font-size:20px; font-weight:800; color:#fff; align-self:center}
+  .prow .nm{font-weight:700; font-size:16px}
+  .prow .tm{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.5px}
+  .prow .lk{color:var(--muted); font-size:12px; text-align:right; white-space:nowrap}
+  .prow.gold{background:linear-gradient(90deg,rgba(255,216,77,.12),transparent); border-radius:12px}
+
+  .actions{display:flex; gap:10px; justify-content:center; margin-top:22px}
 
   @media(max-width:680px){
     .arena{grid-template-columns:1fr; gap:10px}
@@ -110,38 +132,51 @@
 <header>
   <div class="brand">
     <span class="flame">🔥</span>
-    <div><h1>Hottest NFL QB</h1><small>Pick the hotter one — winner stays</small></div>
+    <div><h1>Hottest NFL QB</h1><small>Gauntlet → Finals → Top 5</small></div>
   </div>
   <div class="tools">
-    <span class="stat">Votes: <b id="voteCount">0</b> · Min seen: <b id="minSeen">0</b></span>
-    <button class="btn" id="standingsBtn">📊 Standings</button>
-    <button class="btn" id="resetBtn">↺ Reset</button>
+    <span class="stat" id="progressStat"></span>
+    <button class="btn" id="resetBtn">↺ Start over</button>
   </div>
 </header>
 
 <main>
+  <div class="banner"><span class="phase" id="phaseTag">Round 1 · The Gauntlet</span></div>
   <p class="prompt">Who's <b>hotter</b>? Click a card — or use <kbd>←</kbd> / <kbd>→</kbd>.</p>
+  <div class="pbar"><div id="pbarFill"></div></div>
   <div class="arena">
     <div class="pick" id="left"></div>
     <div class="vs">VS</div>
     <div class="pick" id="right"></div>
   </div>
-  <p class="hint">The winner stays on screen and faces a new challenger. Open <b>Standings</b> anytime to see the live stack rank. Progress is saved on this device.</p>
+  <p class="hint" id="hint">Every QB appears <b>once</b>. The hotter one stays up; the loser is out. Winners advance to the Finals.</p>
 </main>
 
-<div class="overlay" id="overlay">
+<!-- Finals intro -->
+<div class="overlay" id="interstitial">
   <div class="board">
-    <div class="bhead">
-      <h2>🏆 Hotness Stack Rank</h2>
-      <button class="btn" id="closeBoard">✕ Close</button>
+    <h2>🏆 Finals time</h2>
+    <p class="sub" id="interSub"></p>
+    <div class="chips" id="finalistChips"></div>
+    <button class="btn primary" id="startFinalsBtn">Start the Finals →</button>
+  </div>
+</div>
+
+<!-- Final results -->
+<div class="overlay" id="results">
+  <div class="board">
+    <h2>🔥 Your Hottest QB — Top 5</h2>
+    <p class="sub" id="resultsSub"></p>
+    <div id="podium"></div>
+    <div class="actions">
+      <button class="btn" id="copyBtn">📋 Copy results</button>
+      <button class="btn primary" id="playAgainBtn">Play again</button>
     </div>
-    <div class="row head"><div class="rk">#</div><div class="who">Quarterback</div><div class="rec">W–L</div><div class="rt">Rating</div></div>
-    <div id="boardRows"></div>
   </div>
 </div>
 
 <script>
-/* ---------- 2025 NFL starting QBs (edit any photo by swapping the ESPN id) ---------- */
+/* ---------- 2025 NFL starting QBs (swap any photo by changing the ESPN id) ---------- */
 const QBS = [
   {n:"Kyler Murray",     t:"Cardinals",  ab:"ARI", id:"3917315", c:"#97233F"},
   {n:"Michael Penix Jr.",t:"Falcons",    ab:"ATL", id:"4360423", c:"#A71930"},
@@ -177,129 +212,215 @@ const QBS = [
   {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414"},
 ];
 const PHOTO = id => `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
+const byId = id => QBS.find(q=>q.id===id);
+const initials = n => n.split(" ").map(w=>w[0]).slice(0,2).join("");
+const MAX_FINALISTS = 8;   // cap the playoff pool so the Finals stay short
 
-/* ---------- Elo engine + state ---------- */
-const STORE = "qbHotRanker.v1";
-const K = 32;
+/* ---------- state ---------- */
+const STORE = "qbHotRanker.v2";
 let state;
 
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
+
 function fresh(){
-  return { ratings:Object.fromEntries(QBS.map(q=>[q.id,1500])),
-           wins:Object.fromEntries(QBS.map(q=>[q.id,0])),
-           losses:Object.fromEntries(QBS.map(q=>[q.id,0])),
-           games:Object.fromEntries(QBS.map(q=>[q.id,0])),
-           votes:0, champ:null, challenger:null };
+  const order = shuffle(QBS.map(q=>q.id));
+  const champ = order.shift(), challenger = order.shift();
+  return {
+    phase:"gauntlet",
+    queue:order, champ, challenger,
+    wins:Object.fromEntries(QBS.map(q=>[q.id,0])),
+    losses:Object.fromEntries(QBS.map(q=>[q.id,0])),
+    finals:null, podium:[], votes:0
+  };
 }
 function load(){
   try{ const s=JSON.parse(localStorage.getItem(STORE));
-       if(s && s.ratings && Object.keys(s.ratings).length===QBS.length) return s; }catch(e){}
+       if(s && s.wins && Object.keys(s.wins).length===QBS.length && s.phase) return s; }catch(e){}
   return fresh();
 }
-// Opening via file:// can make localStorage throw — never let a failed save break a vote.
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
 
-const byId = id => QBS.find(q=>q.id===id);
-
-// pick challenger: among QBs not currently shown, prefer fewest games (with mild randomness)
-function pickChallenger(excludeIds){
-  const pool = QBS.filter(q=>!excludeIds.includes(q.id));
-  const min = Math.min(...pool.map(q=>state.games[q.id]));
-  const candidates = pool.filter(q=>state.games[q.id]<=min+1);
-  return candidates[Math.floor(Math.random()*candidates.length)].id;
-}
-function newMatchIfNeeded(){
-  if(state.champ && state.challenger) return;
-  if(!state.champ){
-    const a = QBS[Math.floor(Math.random()*QBS.length)].id;
-    state.champ = a;
-    state.challenger = pickChallenger([a]);
-  } else {
-    state.challenger = pickChallenger([state.champ]);
-  }
-}
-
-function vote(winnerSide){
-  const leftId = state.champ, rightId = state.challenger;
-  const winId = winnerSide==="left" ? leftId : rightId;
-  const loseId = winnerSide==="left" ? rightId : leftId;
-
-  const Rw=state.ratings[winId], Rl=state.ratings[loseId];
-  const Ew = 1/(1+Math.pow(10,(Rl-Rw)/400));
-  state.ratings[winId] = Rw + K*(1-Ew);
-  state.ratings[loseId] = Rl + K*(0-(1-Ew));
-  state.wins[winId]++; state.losses[loseId]++;
-  state.games[winId]++; state.games[loseId]++;
-  state.votes++;
-
-  // winner stays as champ on the LEFT, new challenger on the right
-  state.champ = winId;
-  state.challenger = pickChallenger([winId]);
-  save();
-  flashAndRender(winnerSide);
-}
-
-/* ---------- rendering ---------- */
-function cardHTML(q, isChamp){
-  const initials = q.n.split(" ").map(w=>w[0]).slice(0,2).join("");
+/* ---------- card rendering ---------- */
+function cardHTML(q){
   return `
     <div class="photo" style="--team:${q.c}">
       <img src="${PHOTO(q.id)}" alt="${q.n}"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <div class="fallback" style="display:none">
-        <div class="initials">${initials}</div>
-      </div>
+      <div class="fallback" style="display:none"><div class="initials">${initials(q.n)}</div></div>
     </div>
     <div class="meta">
       <div class="name">${q.n}</div>
       <div class="team">${q.t} · ${q.ab}</div>
     </div>`;
 }
-function render(){
-  newMatchIfNeeded();
-  const L=byId(state.champ), R=byId(state.challenger);
+function renderMatch(){
+  let L, R;
+  if(state.phase==="finals"){ L=byId(state.finals.champ); R=byId(state.finals.challenger); }
+  else { L=byId(state.champ); R=byId(state.challenger); }   // gauntlet + interstitial use last gauntlet pair
   const left=document.getElementById("left"), right=document.getElementById("right");
-  left.className="pick champ-tag"; left.innerHTML=cardHTML(L,true);
-  right.className="pick"; right.innerHTML=cardHTML(R,false);
-  document.getElementById("voteCount").textContent=state.votes;
-  document.getElementById("minSeen").textContent=Math.min(...QBS.map(q=>state.games[q.id]));
+  left.className="pick champ-tag"; left.innerHTML=cardHTML(L);
+  right.className="pick"; right.innerHTML=cardHTML(R);
+
+  const isFinals = state.phase==="finals";
+  const tag=document.getElementById("phaseTag");
+  if(isFinals){
+    tag.className="phase finals";
+    tag.textContent=`Finals · deciding #${state.podium.length+1}`;
+    document.getElementById("hint").innerHTML="Final round! Keep the hotter one up to lock in each spot in your Top 5.";
+  } else {
+    tag.className="phase";
+    const seen = QBS.length - state.queue.length;
+    tag.textContent=`The Gauntlet · ${seen}/${QBS.length}`;
+    document.getElementById("hint").innerHTML="Every QB appears <b>once</b>. The hotter one stays up; the loser is out. Winners advance to the Finals.";
+  }
+  // progress
+  let pct;
+  if(isFinals){ pct = 60 + 40*(state.podium.length/5); }
+  else { pct = 60*((QBS.length - state.queue.length)/QBS.length); }
+  document.getElementById("pbarFill").style.width = Math.min(100,pct)+"%";
+  document.getElementById("progressStat").innerHTML = isFinals
+    ? `Finals · <b>${state.podium.length}</b>/5 locked`
+    : `Seen <b>${QBS.length - state.queue.length}</b>/${QBS.length}`;
 }
-function flashAndRender(side){
-  const el=document.getElementById(side);
-  el.classList.add("flash");
-  setTimeout(render, 130);
+function flashThenRender(side){
+  document.getElementById(side).classList.add("flash");
+  setTimeout(renderMatch, 130);
 }
 
-/* ---------- standings ---------- */
-function showBoard(){
-  const ranked=[...QBS].sort((a,b)=>state.ratings[b.id]-state.ratings[a.id]);
+/* ---------- phase 1: gauntlet ---------- */
+function gauntletVote(side){
+  const winner = side==="left" ? state.champ : state.challenger;
+  const loser  = side==="left" ? state.challenger : state.champ;
+  state.wins[winner]++; state.losses[loser]++; state.votes++;
+  state.champ = winner;
+  if(state.queue.length>0){
+    state.challenger = state.queue.shift();
+    save(); flashThenRender(side);
+  } else {
+    enterInterstitial(); save();
+  }
+}
+
+/* ---------- transition ---------- */
+function finalistPool(){
+  return QBS.filter(q=>state.wins[q.id]>0)
+            .sort((a,b)=>state.wins[b.id]-state.wins[a.id])
+            .slice(0,MAX_FINALISTS)
+            .map(q=>q.id);
+}
+function enterInterstitial(){
+  state.phase="interstitial";
+  state.finals={ pool:finalistPool(), champ:null, challenger:null, rest:[] };
+  save(); showInterstitial();
+}
+function showInterstitial(){
+  const pool=state.finals.pool;
+  document.getElementById("interSub").innerHTML =
+    `<b>${pool.length}</b> quarterback${pool.length!==1?"s":""} won at least one matchup and made the cut. `+
+    `Now we'll crown your <b>Top 5</b>.`;
+  document.getElementById("finalistChips").innerHTML = pool.map(id=>{
+    const q=byId(id);
+    return `<div class="chip">${q.n} <span>${state.wins[id]}♥</span></div>`;
+  }).join("");
+  document.getElementById("interstitial").classList.add("open");
+}
+
+/* ---------- phase 2: finals (selection-sort by king-of-the-hill) ---------- */
+function nextRank(){
+  // returns true if a new match is set up, false if the game is finished
+  const f=state.finals;
+  if(state.podium.length>=5 || f.pool.length===0){ finishGame(); return false; }
+  if(f.pool.length===1){ state.podium.push(f.pool[0]); f.pool=[]; finishGame(); return false; }
+  f.champ = f.pool[0];
+  f.rest  = f.pool.slice(1);
+  f.challenger = f.rest.shift();
+  return true;
+}
+function startFinals(){
+  document.getElementById("interstitial").classList.remove("open");
+  state.phase="finals";
+  if(nextRank()){ save(); renderMatch(); }
+}
+function finalsVote(side){
+  const f=state.finals;
+  const winner = side==="left" ? f.champ : f.challenger;
+  state.wins[winner]++; state.votes++;
+  f.champ = winner;                     // best-so-far stays up
+  if(f.rest.length>0){
+    f.challenger = f.rest.shift();
+    save(); flashThenRender(side);
+  } else {
+    // champ is the hottest remaining → lock the next spot
+    state.podium.push(f.champ);
+    f.pool = f.pool.filter(id=>id!==f.champ);
+    if(nextRank()){ save(); flashThenRender(side); }
+    else { save(); }
+  }
+}
+
+/* ---------- results ---------- */
+function avatarHTML(q){
+  return `<div class="av">
+      <img src="${PHOTO(q.id)}" alt="${q.n}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ini',textContent:'${initials(q.n)}'}))">
+    </div>`;
+}
+function finishGame(){
+  state.phase="done"; save(); showResults();
+}
+function showResults(){
   const medal=["gold","silver","bronze"];
-  document.getElementById("boardRows").innerHTML = ranked.map((q,i)=>`
-    <div class="row ${medal[i]||""}">
+  document.getElementById("resultsSub").innerHTML =
+    `Ranked from <b>${state.finals.pool.length+state.podium.length}</b> finalists across <b>${state.votes}</b> picks.`;
+  document.getElementById("podium").innerHTML = state.podium.map((id,i)=>{
+    const q=byId(id);
+    return `<div class="prow ${medal[i]||""}">
       <div class="rk">${i+1}</div>
-      <div class="who"><b>${q.n}</b> <span>${q.ab}</span></div>
-      <div class="rec">${state.wins[q.id]}–${state.losses[q.id]}</div>
-      <div class="rt">${Math.round(state.ratings[q.id])}</div>
-    </div>`).join("");
-  document.getElementById("overlay").classList.add("open");
+      ${avatarHTML(q)}
+      <div><div class="nm">${q.n}</div><div class="tm">${q.t}</div></div>
+      <div class="lk">${state.wins[id]} ♥</div>
+    </div>`;
+  }).join("");
+  document.getElementById("results").classList.add("open");
+}
+function copyResults(){
+  const txt = "🔥 My Hottest NFL QB Top 5:\n" +
+    state.podium.map((id,i)=>`${i+1}. ${byId(id).n} (${byId(id).ab})`).join("\n");
+  navigator.clipboard?.writeText(txt).then(
+    ()=>{ const b=document.getElementById("copyBtn"); b.textContent="✓ Copied!"; setTimeout(()=>b.textContent="📋 Copy results",1500); },
+    ()=>{}
+  );
 }
 
-/* ---------- wiring ---------- */
-document.getElementById("left").addEventListener("click", ()=>vote("left"));
-document.getElementById("right").addEventListener("click", ()=>vote("right"));
+/* ---------- dispatch & wiring ---------- */
+function handleVote(side){
+  if(state.phase==="gauntlet") gauntletVote(side);
+  else if(state.phase==="finals") finalsVote(side);
+}
+document.getElementById("left").addEventListener("click", ()=>handleVote("left"));
+document.getElementById("right").addEventListener("click", ()=>handleVote("right"));
 document.addEventListener("keydown", e=>{
-  if(document.getElementById("overlay").classList.contains("open")) return;
-  if(e.key==="ArrowLeft") vote("left");
-  if(e.key==="ArrowRight") vote("right");
+  if(document.querySelector(".overlay.open")) return;
+  if(e.key==="ArrowLeft") handleVote("left");
+  if(e.key==="ArrowRight") handleVote("right");
 });
-document.getElementById("standingsBtn").addEventListener("click", showBoard);
-document.getElementById("closeBoard").addEventListener("click", ()=>document.getElementById("overlay").classList.remove("open"));
-document.getElementById("overlay").addEventListener("click", e=>{ if(e.target.id==="overlay") e.currentTarget.classList.remove("open"); });
+document.getElementById("startFinalsBtn").addEventListener("click", startFinals);
+document.getElementById("copyBtn").addEventListener("click", copyResults);
+document.getElementById("playAgainBtn").addEventListener("click", ()=>{
+  document.getElementById("results").classList.remove("open");
+  state=fresh(); save(); renderMatch();
+});
 document.getElementById("resetBtn").addEventListener("click", ()=>{
-  if(confirm("Reset all votes and rankings?")){ state=fresh(); save(); render(); }
+  if(confirm("Start over from the beginning?")){
+    document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("open"));
+    state=fresh(); save(); renderMatch();
+  }
 });
 
+/* ---------- boot ---------- */
 state=load();
-render();
+if(state.phase==="done"){ renderMatch(); showResults(); }
+else if(state.phase==="interstitial"){ renderMatch(); showInterstitial(); }
+else { renderMatch(); }
 </script>
 </body>
 </html>
