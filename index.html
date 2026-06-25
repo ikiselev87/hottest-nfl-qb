@@ -178,14 +178,16 @@
 <script>
 /* ---------- 2025 NFL starting QBs (swap any photo by changing the ESPN id) ---------- */
 const QBS = [
-  {n:"Kyler Murray",     t:"Cardinals",  ab:"ARI", id:"3917315", c:"#97233F"},
+  {n:"Jacoby Brissett",  t:"Cardinals",  ab:"ARI", id:"2578570", c:"#97233F"},
   {n:"Michael Penix Jr.",t:"Falcons",    ab:"ATL", id:"4360423", c:"#A71930"},
+  {n:"Tua Tagovailoa",   t:"Falcons",    ab:"ATL", id:"4241479", c:"#A71930"},
   {n:"Lamar Jackson",    t:"Ravens",     ab:"BAL", id:"3916387", c:"#241773"},
   {n:"Josh Allen",       t:"Bills",      ab:"BUF", id:"3918298", c:"#00338D"},
   {n:"Bryce Young",      t:"Panthers",   ab:"CAR", id:"4685720", c:"#0085CA"},
-  {n:"Caleb Williams",   t:"Bears",      ab:"CHI", id:"4431611", c:"#0B162A"},
+  {n:"Caleb Williams",   t:"Bears",      ab:"CHI", id:"4431611", c:"#0B162A", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Caleb_Williams_%2854858668366%29_%28cropped%29.jpg/330px-Caleb_Williams_%2854858668366%29_%28cropped%29.jpg"},
   {n:"Joe Burrow",       t:"Bengals",    ab:"CIN", id:"3915511", c:"#FB4F14"},
-  {n:"Dillon Gabriel",   t:"Browns",     ab:"CLE", id:"4427238", c:"#311D00"},
+  {n:"Shedeur Sanders",  t:"Browns",     ab:"CLE", id:"4432762", c:"#311D00"},
+  {n:"Deshaun Watson",   t:"Browns",     ab:"CLE", id:"3122840", c:"#311D00"},
   {n:"Dak Prescott",     t:"Cowboys",    ab:"DAL", id:"2577417", c:"#003594"},
   {n:"Bo Nix",           t:"Broncos",    ab:"DEN", id:"4426338", c:"#FB4F14"},
   {n:"Jared Goff",       t:"Lions",      ab:"DET", id:"3046779", c:"#0076B6"},
@@ -196,13 +198,13 @@ const QBS = [
   {n:"Patrick Mahomes",  t:"Chiefs",     ab:"KC",  id:"3139477", c:"#E31837"},
   {n:"Justin Herbert",   t:"Chargers",   ab:"LAC", id:"4038941", c:"#0080C6"},
   {n:"Matthew Stafford", t:"Rams",       ab:"LAR", id:"12483",   c:"#003594"},
-  {n:"Geno Smith",       t:"Raiders",    ab:"LV",  id:"15864",   c:"#000000"},
-  {n:"Tua Tagovailoa",   t:"Dolphins",   ab:"MIA", id:"4241479", c:"#008E97"},
-  {n:"J.J. McCarthy",    t:"Vikings",    ab:"MIN", id:"4433970", c:"#4F2683"},
+  {n:"Fernando Mendoza", t:"Raiders",    ab:"LV",  id:"4837248", c:"#000000"},
+  {n:"Malik Willis",     t:"Dolphins",   ab:"MIA", id:"4242512", c:"#008E97"},
+  {n:"Kyler Murray",     t:"Vikings",    ab:"MIN", id:"3917315", c:"#4F2683"},
   {n:"Drake Maye",       t:"Patriots",   ab:"NE",  id:"4431452", c:"#002244"},
-  {n:"Spencer Rattler",  t:"Saints",     ab:"NO",  id:"4426339", c:"#9b8a55"},
+  {n:"Tyler Shough",     t:"Saints",     ab:"NO",  id:"4360689", c:"#9b8a55"},
   {n:"Jaxson Dart",      t:"Giants",     ab:"NYG", id:"4689114", c:"#0B2265"},
-  {n:"Justin Fields",    t:"Jets",       ab:"NYJ", id:"4362887", c:"#125740"},
+  {n:"Geno Smith",       t:"Jets",       ab:"NYJ", id:"15864",   c:"#125740"},
   {n:"Jalen Hurts",      t:"Eagles",     ab:"PHI", id:"4040715", c:"#004C54"},
   {n:"Aaron Rodgers",    t:"Steelers",   ab:"PIT", id:"8439",    c:"#b9890d"},
   {n:"Sam Darnold",      t:"Seahawks",   ab:"SEA", id:"3912547", c:"#002244"},
@@ -212,12 +214,13 @@ const QBS = [
   {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414"},
 ];
 const PHOTO = id => `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
+const imgURL = q => q.img || PHOTO(q.id);   // q.img overrides the default ESPN headshot
 const byId = id => QBS.find(q=>q.id===id);
 const initials = n => n.split(" ").map(w=>w[0]).slice(0,2).join("");
 const MAX_FINALISTS = 8;   // cap the playoff pool so the Finals stay short
 
 /* ---------- state ---------- */
-const STORE = "qbHotRanker.v2";
+const STORE = "qbHotRanker.v3";
 let state;
 
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -244,7 +247,7 @@ function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch
 function cardHTML(q){
   return `
     <div class="photo" style="--team:${q.c}">
-      <img src="${PHOTO(q.id)}" alt="${q.n}"
+      <img src="${imgURL(q)}" alt="${q.n}"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="fallback" style="display:none"><div class="initials">${initials(q.n)}</div></div>
     </div>
@@ -361,7 +364,7 @@ function finalsVote(side){
 /* ---------- results ---------- */
 function avatarHTML(q){
   return `<div class="av">
-      <img src="${PHOTO(q.id)}" alt="${q.n}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ini',textContent:'${initials(q.n)}'}))">
+      <img src="${imgURL(q)}" alt="${q.n}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ini',textContent:'${initials(q.n)}'}))">
     </div>`;
 }
 function finishGame(){
