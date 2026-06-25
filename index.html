@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hottest NFL QB — Ranker</title>
+<style>
+  :root{
+    --bg1:#0a0e1a; --bg2:#131a2e; --card:#1b2238; --line:#2a3354;
+    --txt:#eef2ff; --muted:#9aa6c9; --accent:#ffd84d; --win:#37d67a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 50% -10%,var(--bg2),var(--bg1));
+    color:var(--txt); min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:16px 22px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; backdrop-filter:blur(8px);
+    background:rgba(10,14,26,.72); z-index:5;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.3px}
+  .brand .flame{font-size:22px}
+  .brand h1{font-size:17px}
+  .brand small{display:block; font-weight:500; color:var(--muted); font-size:11px; letter-spacing:.2px}
+  .tools{display:flex; gap:8px; flex-wrap:wrap}
+  button.btn{
+    font:inherit; font-weight:600; font-size:13px; color:var(--txt);
+    background:var(--card); border:1px solid var(--line); padding:9px 14px;
+    border-radius:10px; cursor:pointer; transition:.15s;
+  }
+  button.btn:hover{border-color:var(--accent); color:var(--accent)}
+  button.btn.primary{background:var(--accent); color:#1a1300; border-color:var(--accent)}
+  .stat{font-size:12px; color:var(--muted); align-self:center; white-space:nowrap}
+  .stat b{color:var(--txt)}
+
+  main{max-width:1050px; margin:0 auto; padding:26px 18px 60px}
+  .prompt{text-align:center; color:var(--muted); font-size:14px; margin-bottom:18px}
+  .prompt b{color:var(--accent)}
+
+  .arena{display:grid; grid-template-columns:1fr 64px 1fr; gap:14px; align-items:stretch}
+  .vs{display:flex; align-items:center; justify-content:center; font-weight:900;
+      font-style:italic; color:var(--muted); font-size:20px}
+
+  .pick{
+    position:relative; background:var(--card); border:2px solid var(--line);
+    border-radius:18px; overflow:hidden; cursor:pointer; transition:transform .12s, border-color .15s, box-shadow .15s;
+    display:flex; flex-direction:column; min-height:430px;
+  }
+  .pick:hover{transform:translateY(-4px); border-color:var(--accent); box-shadow:0 14px 40px rgba(0,0,0,.45)}
+  .pick:active{transform:scale(.99)}
+  .pick.flash{border-color:var(--win); box-shadow:0 0 0 3px rgba(55,214,122,.35)}
+  .pick.champ-tag::after{
+    content:"👑 STAYS"; position:absolute; top:12px; left:12px; z-index:3;
+    background:rgba(255,216,77,.92); color:#1a1300; font-size:11px; font-weight:800;
+    letter-spacing:.5px; padding:4px 9px; border-radius:999px;
+  }
+  .photo{
+    flex:1; display:flex; align-items:flex-end; justify-content:center;
+    background:linear-gradient(180deg,var(--team) 0%, #0d1322 78%);
+    position:relative; min-height:300px;
+  }
+  .photo img{max-height:330px; width:auto; display:block; filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
+  .photo .fallback{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; width:100%; gap:8px;
+  }
+  .photo .fallback .initials{
+    font-size:74px; font-weight:900; color:rgba(255,255,255,.92);
+    width:140px; height:140px; border-radius:50%; background:rgba(0,0,0,.28);
+    display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.25);
+  }
+  .meta{padding:14px 16px; text-align:center; border-top:1px solid var(--line); background:rgba(0,0,0,.18)}
+  .meta .name{font-size:20px; font-weight:800}
+  .meta .team{font-size:12px; color:var(--muted); margin-top:2px; letter-spacing:.6px; text-transform:uppercase}
+
+  .hint{text-align:center; color:var(--muted); font-size:12px; margin-top:18px}
+  kbd{background:var(--card); border:1px solid var(--line); border-bottom-width:2px;
+      border-radius:6px; padding:1px 7px; font-size:12px; font-family:inherit}
+
+  /* leaderboard overlay */
+  .overlay{position:fixed; inset:0; background:rgba(6,9,18,.78); backdrop-filter:blur(6px);
+           display:none; align-items:flex-start; justify-content:center; z-index:20; padding:40px 16px; overflow:auto}
+  .overlay.open{display:flex}
+  .board{background:var(--bg2); border:1px solid var(--line); border-radius:18px;
+         width:100%; max-width:620px; padding:8px}
+  .board .bhead{display:flex; align-items:center; justify-content:space-between; padding:14px 16px}
+  .board h2{font-size:18px}
+  .row{display:grid; grid-template-columns:42px 1fr 86px 70px; align-items:center;
+       gap:8px; padding:9px 14px; border-top:1px solid var(--line); font-size:14px}
+  .row.head{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; border-top:none}
+  .row .rk{font-weight:800; color:var(--accent); text-align:center}
+  .row .who b{font-weight:700}
+  .row .who span{color:var(--muted); font-size:12px}
+  .row .rec{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums}
+  .row .rt{text-align:right; font-weight:700; font-variant-numeric:tabular-nums}
+  .row.gold .rk{color:#ffd84d} .row.silver .rk{color:#cfd8ec} .row.bronze .rk{color:#e6a86b}
+
+  @media(max-width:680px){
+    .arena{grid-template-columns:1fr; gap:10px}
+    .vs{order:2; padding:2px}
+    .pick{min-height:330px}
+    .photo img{max-height:240px} .photo{min-height:230px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="flame">🔥</span>
+    <div><h1>Hottest NFL QB</h1><small>Pick the hotter one — winner stays</small></div>
+  </div>
+  <div class="tools">
+    <span class="stat">Votes: <b id="voteCount">0</b> · Min seen: <b id="minSeen">0</b></span>
+    <button class="btn" id="standingsBtn">📊 Standings</button>
+    <button class="btn" id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+
+<main>
+  <p class="prompt">Who's <b>hotter</b>? Click a card — or use <kbd>←</kbd> / <kbd>→</kbd>.</p>
+  <div class="arena">
+    <div class="pick" id="left"></div>
+    <div class="vs">VS</div>
+    <div class="pick" id="right"></div>
+  </div>
+  <p class="hint">The winner stays on screen and faces a new challenger. Open <b>Standings</b> anytime to see the live stack rank. Progress is saved on this device.</p>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="board">
+    <div class="bhead">
+      <h2>🏆 Hotness Stack Rank</h2>
+      <button class="btn" id="closeBoard">✕ Close</button>
+    </div>
+    <div class="row head"><div class="rk">#</div><div class="who">Quarterback</div><div class="rec">W–L</div><div class="rt">Rating</div></div>
+    <div id="boardRows"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- 2025 NFL starting QBs (edit any photo by swapping the ESPN id) ---------- */
+const QBS = [
+  {n:"Kyler Murray",     t:"Cardinals",  ab:"ARI", id:"3917315", c:"#97233F"},
+  {n:"Michael Penix Jr.",t:"Falcons",    ab:"ATL", id:"4360423", c:"#A71930"},
+  {n:"Lamar Jackson",    t:"Ravens",     ab:"BAL", id:"3916387", c:"#241773"},
+  {n:"Josh Allen",       t:"Bills",      ab:"BUF", id:"3918298", c:"#00338D"},
+  {n:"Bryce Young",      t:"Panthers",   ab:"CAR", id:"4685720", c:"#0085CA"},
+  {n:"Caleb Williams",   t:"Bears",      ab:"CHI", id:"4431611", c:"#0B162A"},
+  {n:"Joe Burrow",       t:"Bengals",    ab:"CIN", id:"3915511", c:"#FB4F14"},
+  {n:"Dillon Gabriel",   t:"Browns",     ab:"CLE", id:"4427238", c:"#311D00"},
+  {n:"Dak Prescott",     t:"Cowboys",    ab:"DAL", id:"2577417", c:"#003594"},
+  {n:"Bo Nix",           t:"Broncos",    ab:"DEN", id:"4426338", c:"#FB4F14"},
+  {n:"Jared Goff",       t:"Lions",      ab:"DET", id:"3046779", c:"#0076B6"},
+  {n:"Jordan Love",      t:"Packers",    ab:"GB",  id:"4036378", c:"#203731"},
+  {n:"C.J. Stroud",      t:"Texans",     ab:"HOU", id:"4432577", c:"#03202F"},
+  {n:"Daniel Jones",     t:"Colts",      ab:"IND", id:"3917792", c:"#002C5F"},
+  {n:"Trevor Lawrence",  t:"Jaguars",    ab:"JAX", id:"4360310", c:"#006778"},
+  {n:"Patrick Mahomes",  t:"Chiefs",     ab:"KC",  id:"3139477", c:"#E31837"},
+  {n:"Justin Herbert",   t:"Chargers",   ab:"LAC", id:"4038941", c:"#0080C6"},
+  {n:"Matthew Stafford", t:"Rams",       ab:"LAR", id:"12483",   c:"#003594"},
+  {n:"Geno Smith",       t:"Raiders",    ab:"LV",  id:"15864",   c:"#000000"},
+  {n:"Tua Tagovailoa",   t:"Dolphins",   ab:"MIA", id:"4241479", c:"#008E97"},
+  {n:"J.J. McCarthy",    t:"Vikings",    ab:"MIN", id:"4433970", c:"#4F2683"},
+  {n:"Drake Maye",       t:"Patriots",   ab:"NE",  id:"4431452", c:"#002244"},
+  {n:"Spencer Rattler",  t:"Saints",     ab:"NO",  id:"4426339", c:"#9b8a55"},
+  {n:"Jaxson Dart",      t:"Giants",     ab:"NYG", id:"4689114", c:"#0B2265"},
+  {n:"Justin Fields",    t:"Jets",       ab:"NYJ", id:"4362887", c:"#125740"},
+  {n:"Jalen Hurts",      t:"Eagles",     ab:"PHI", id:"4040715", c:"#004C54"},
+  {n:"Aaron Rodgers",    t:"Steelers",   ab:"PIT", id:"8439",    c:"#b9890d"},
+  {n:"Sam Darnold",      t:"Seahawks",   ab:"SEA", id:"3912547", c:"#002244"},
+  {n:"Brock Purdy",      t:"49ers",      ab:"SF",  id:"4361741", c:"#AA0000"},
+  {n:"Baker Mayfield",   t:"Buccaneers", ab:"TB",  id:"3052587", c:"#D50A0A"},
+  {n:"Cam Ward",         t:"Titans",     ab:"TEN", id:"4688380", c:"#4B92DB"},
+  {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414"},
+];
+const PHOTO = id => `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
+
+/* ---------- Elo engine + state ---------- */
+const STORE = "qbHotRanker.v1";
+const K = 32;
+let state;
+
+function fresh(){
+  return { ratings:Object.fromEntries(QBS.map(q=>[q.id,1500])),
+           wins:Object.fromEntries(QBS.map(q=>[q.id,0])),
+           losses:Object.fromEntries(QBS.map(q=>[q.id,0])),
+           games:Object.fromEntries(QBS.map(q=>[q.id,0])),
+           votes:0, champ:null, challenger:null };
+}
+function load(){
+  try{ const s=JSON.parse(localStorage.getItem(STORE));
+       if(s && s.ratings && Object.keys(s.ratings).length===QBS.length) return s; }catch(e){}
+  return fresh();
+}
+// Opening via file:// can make localStorage throw — never let a failed save break a vote.
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+
+const byId = id => QBS.find(q=>q.id===id);
+
+// pick challenger: among QBs not currently shown, prefer fewest games (with mild randomness)
+function pickChallenger(excludeIds){
+  const pool = QBS.filter(q=>!excludeIds.includes(q.id));
+  const min = Math.min(...pool.map(q=>state.games[q.id]));
+  const candidates = pool.filter(q=>state.games[q.id]<=min+1);
+  return candidates[Math.floor(Math.random()*candidates.length)].id;
+}
+function newMatchIfNeeded(){
+  if(state.champ && state.challenger) return;
+  if(!state.champ){
+    const a = QBS[Math.floor(Math.random()*QBS.length)].id;
+    state.champ = a;
+    state.challenger = pickChallenger([a]);
+  } else {
+    state.challenger = pickChallenger([state.champ]);
+  }
+}
+
+function vote(winnerSide){
+  const leftId = state.champ, rightId = state.challenger;
+  const winId = winnerSide==="left" ? leftId : rightId;
+  const loseId = winnerSide==="left" ? rightId : leftId;
+
+  const Rw=state.ratings[winId], Rl=state.ratings[loseId];
+  const Ew = 1/(1+Math.pow(10,(Rl-Rw)/400));
+  state.ratings[winId] = Rw + K*(1-Ew);
+  state.ratings[loseId] = Rl + K*(0-(1-Ew));
+  state.wins[winId]++; state.losses[loseId]++;
+  state.games[winId]++; state.games[loseId]++;
+  state.votes++;
+
+  // winner stays as champ on the LEFT, new challenger on the right
+  state.champ = winId;
+  state.challenger = pickChallenger([winId]);
+  save();
+  flashAndRender(winnerSide);
+}
+
+/* ---------- rendering ---------- */
+function cardHTML(q, isChamp){
+  const initials = q.n.split(" ").map(w=>w[0]).slice(0,2).join("");
+  return `
+    <div class="photo" style="--team:${q.c}">
+      <img src="${PHOTO(q.id)}" alt="${q.n}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="fallback" style="display:none">
+        <div class="initials">${initials}</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="name">${q.n}</div>
+      <div class="team">${q.t} · ${q.ab}</div>
+    </div>`;
+}
+function render(){
+  newMatchIfNeeded();
+  const L=byId(state.champ), R=byId(state.challenger);
+  const left=document.getElementById("left"), right=document.getElementById("right");
+  left.className="pick champ-tag"; left.innerHTML=cardHTML(L,true);
+  right.className="pick"; right.innerHTML=cardHTML(R,false);
+  document.getElementById("voteCount").textContent=state.votes;
+  document.getElementById("minSeen").textContent=Math.min(...QBS.map(q=>state.games[q.id]));
+}
+function flashAndRender(side){
+  const el=document.getElementById(side);
+  el.classList.add("flash");
+  setTimeout(render, 130);
+}
+
+/* ---------- standings ---------- */
+function showBoard(){
+  const ranked=[...QBS].sort((a,b)=>state.ratings[b.id]-state.ratings[a.id]);
+  const medal=["gold","silver","bronze"];
+  document.getElementById("boardRows").innerHTML = ranked.map((q,i)=>`
+    <div class="row ${medal[i]||""}">
+      <div class="rk">${i+1}</div>
+      <div class="who"><b>${q.n}</b> <span>${q.ab}</span></div>
+      <div class="rec">${state.wins[q.id]}–${state.losses[q.id]}</div>
+      <div class="rt">${Math.round(state.ratings[q.id])}</div>
+    </div>`).join("");
+  document.getElementById("overlay").classList.add("open");
+}
+
+/* ---------- wiring ---------- */
+document.getElementById("left").addEventListener("click", ()=>vote("left"));
+document.getElementById("right").addEventListener("click", ()=>vote("right"));
+document.addEventListener("keydown", e=>{
+  if(document.getElementById("overlay").classList.contains("open")) return;
+  if(e.key==="ArrowLeft") vote("left");
+  if(e.key==="ArrowRight") vote("right");
+});
+document.getElementById("standingsBtn").addEventListener("click", showBoard);
+document.getElementById("closeBoard").addEventListener("click", ()=>document.getElementById("overlay").classList.remove("open"));
+document.getElementById("overlay").addEventListener("click", e=>{ if(e.target.id==="overlay") e.currentTarget.classList.remove("open"); });
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Reset all votes and rankings?")){ state=fresh(); save(); render(); }
+});
+
+state=load();
+render();
+</script>
+</body>
+</html>
