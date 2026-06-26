@@ -73,7 +73,7 @@
     background:linear-gradient(180deg,var(--team) 0%, #0d1322 78%);
     position:relative; min-height:300px;
   }
-  .photo img{max-height:330px; width:auto; display:block; filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
+  .photo img{max-height:330px; max-width:100%; width:auto; display:block; filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
   .photo .fallback{display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; width:100%}
   .photo .fallback .initials{
     font-size:74px; font-weight:900; color:rgba(255,255,255,.92);
@@ -111,7 +111,7 @@
   .prow.gold .rk{color:#ffd84d} .prow.silver .rk{color:#cfd8ec} .prow.bronze .rk{color:#e6a86b}
   .prow .av{width:54px; height:54px; border-radius:50%; overflow:hidden; background:#0d1322;
             display:flex; align-items:flex-end; justify-content:center; border:1px solid var(--line)}
-  .prow .av img{width:100%; height:auto; transform:translateY(4px)}
+  .prow .av img{width:100%; height:100%; object-fit:cover; object-position:top center}
   .prow .av .ini{font-size:20px; font-weight:800; color:#fff; align-self:center}
   .prow .nm{font-weight:700; font-size:16px}
   .prow .tm{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.5px}
@@ -178,40 +178,40 @@
 <script>
 /* ---------- 2025 NFL starting QBs (swap any photo by changing the ESPN id) ---------- */
 const QBS = [
-  {n:"Jacoby Brissett",  t:"Cardinals",  ab:"ARI", id:"2578570", c:"#97233F"},
-  {n:"Michael Penix Jr.",t:"Falcons",    ab:"ATL", id:"4360423", c:"#A71930"},
-  {n:"Tua Tagovailoa",   t:"Falcons",    ab:"ATL", id:"4241479", c:"#A71930"},
-  {n:"Lamar Jackson",    t:"Ravens",     ab:"BAL", id:"3916387", c:"#241773"},
-  {n:"Josh Allen",       t:"Bills",      ab:"BUF", id:"3918298", c:"#00338D"},
-  {n:"Bryce Young",      t:"Panthers",   ab:"CAR", id:"4685720", c:"#0085CA"},
-  {n:"Caleb Williams",   t:"Bears",      ab:"CHI", id:"4431611", c:"#0B162A"},
-  {n:"Joe Burrow",       t:"Bengals",    ab:"CIN", id:"3915511", c:"#FB4F14"},
-  {n:"Shedeur Sanders",  t:"Browns",     ab:"CLE", id:"4432762", c:"#311D00"},
-  {n:"Deshaun Watson",   t:"Browns",     ab:"CLE", id:"3122840", c:"#311D00"},
-  {n:"Dak Prescott",     t:"Cowboys",    ab:"DAL", id:"2577417", c:"#003594"},
-  {n:"Bo Nix",           t:"Broncos",    ab:"DEN", id:"4426338", c:"#FB4F14"},
-  {n:"Jared Goff",       t:"Lions",      ab:"DET", id:"3046779", c:"#0076B6"},
-  {n:"Jordan Love",      t:"Packers",    ab:"GB",  id:"4036378", c:"#203731"},
-  {n:"C.J. Stroud",      t:"Texans",     ab:"HOU", id:"4432577", c:"#03202F"},
-  {n:"Daniel Jones",     t:"Colts",      ab:"IND", id:"3917792", c:"#002C5F"},
-  {n:"Trevor Lawrence",  t:"Jaguars",    ab:"JAX", id:"4360310", c:"#006778"},
-  {n:"Patrick Mahomes",  t:"Chiefs",     ab:"KC",  id:"3139477", c:"#E31837"},
-  {n:"Justin Herbert",   t:"Chargers",   ab:"LAC", id:"4038941", c:"#0080C6"},
-  {n:"Matthew Stafford", t:"Rams",       ab:"LAR", id:"12483",   c:"#003594"},
-  {n:"Fernando Mendoza", t:"Raiders",    ab:"LV",  id:"4837248", c:"#000000"},
-  {n:"Malik Willis",     t:"Dolphins",   ab:"MIA", id:"4242512", c:"#008E97"},
-  {n:"Kyler Murray",     t:"Vikings",    ab:"MIN", id:"3917315", c:"#4F2683"},
-  {n:"Drake Maye",       t:"Patriots",   ab:"NE",  id:"4431452", c:"#002244"},
-  {n:"Tyler Shough",     t:"Saints",     ab:"NO",  id:"4360689", c:"#9b8a55"},
-  {n:"Jaxson Dart",      t:"Giants",     ab:"NYG", id:"4689114", c:"#0B2265"},
-  {n:"Geno Smith",       t:"Jets",       ab:"NYJ", id:"15864",   c:"#125740"},
-  {n:"Jalen Hurts",      t:"Eagles",     ab:"PHI", id:"4040715", c:"#004C54"},
-  {n:"Aaron Rodgers",    t:"Steelers",   ab:"PIT", id:"8439",    c:"#b9890d"},
-  {n:"Sam Darnold",      t:"Seahawks",   ab:"SEA", id:"3912547", c:"#002244"},
-  {n:"Brock Purdy",      t:"49ers",      ab:"SF",  id:"4361741", c:"#AA0000"},
-  {n:"Baker Mayfield",   t:"Buccaneers", ab:"TB",  id:"3052587", c:"#D50A0A"},
-  {n:"Cam Ward",         t:"Titans",     ab:"TEN", id:"4688380", c:"#4B92DB"},
-  {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414"},
+  {n:"Jacoby Brissett",  t:"Cardinals",  ab:"ARI", id:"2578570", c:"#97233F", img:"images/2578570.avif"},
+  {n:"Michael Penix Jr.",t:"Falcons",    ab:"ATL", id:"4360423", c:"#A71930", img:"images/4360423.png"},
+  {n:"Tua Tagovailoa",   t:"Falcons",    ab:"ATL", id:"4241479", c:"#A71930", img:"images/4241479.png"},
+  {n:"Lamar Jackson",    t:"Ravens",     ab:"BAL", id:"3916387", c:"#241773", img:"images/3916387.png"},
+  {n:"Josh Allen",       t:"Bills",      ab:"BUF", id:"3918298", c:"#00338D", img:"images/3918298.png"},
+  {n:"Bryce Young",      t:"Panthers",   ab:"CAR", id:"4685720", c:"#0085CA", img:"images/4685720.png"},
+  {n:"Caleb Williams",   t:"Bears",      ab:"CHI", id:"4431611", c:"#0B162A", img:"images/4431611.webp"},
+  {n:"Joe Burrow",       t:"Bengals",    ab:"CIN", id:"3915511", c:"#FB4F14", img:"images/3915511.png"},
+  {n:"Shedeur Sanders",  t:"Browns",     ab:"CLE", id:"4432762", c:"#311D00", img:"images/4432762.png"},
+  {n:"Deshaun Watson",   t:"Browns",     ab:"CLE", id:"3122840", c:"#311D00", img:"images/3122840.png"},
+  {n:"Dak Prescott",     t:"Cowboys",    ab:"DAL", id:"2577417", c:"#003594", img:"images/2577417.png"},
+  {n:"Bo Nix",           t:"Broncos",    ab:"DEN", id:"4426338", c:"#FB4F14", img:"images/4426338.png"},
+  {n:"Jared Goff",       t:"Lions",      ab:"DET", id:"3046779", c:"#0076B6", img:"images/3046779.png"},
+  {n:"Jordan Love",      t:"Packers",    ab:"GB",  id:"4036378", c:"#203731", img:"images/4036378.png"},
+  {n:"C.J. Stroud",      t:"Texans",     ab:"HOU", id:"4432577", c:"#03202F", img:"images/4432577.png"},
+  {n:"Daniel Jones",     t:"Colts",      ab:"IND", id:"3917792", c:"#002C5F", img:"images/3917792.png"},
+  {n:"Trevor Lawrence",  t:"Jaguars",    ab:"JAX", id:"4360310", c:"#006778", img:"images/4360310.png"},
+  {n:"Patrick Mahomes",  t:"Chiefs",     ab:"KC",  id:"3139477", c:"#E31837", img:"images/3139477.png"},
+  {n:"Justin Herbert",   t:"Chargers",   ab:"LAC", id:"4038941", c:"#0080C6", img:"images/4038941.png"},
+  {n:"Matthew Stafford", t:"Rams",       ab:"LAR", id:"12483",   c:"#003594", img:"images/12483.png"},
+  {n:"Fernando Mendoza", t:"Raiders",    ab:"LV",  id:"4837248", c:"#000000", img:"images/4837248.png"},
+  {n:"Malik Willis",     t:"Dolphins",   ab:"MIA", id:"4242512", c:"#008E97", img:"images/4242512.png"},
+  {n:"Kyler Murray",     t:"Vikings",    ab:"MIN", id:"3917315", c:"#4F2683", img:"images/3917315.png"},
+  {n:"Drake Maye",       t:"Patriots",   ab:"NE",  id:"4431452", c:"#002244", img:"images/4431452.png"},
+  {n:"Tyler Shough",     t:"Saints",     ab:"NO",  id:"4360689", c:"#9b8a55", img:"images/4360689.png"},
+  {n:"Jaxson Dart",      t:"Giants",     ab:"NYG", id:"4689114", c:"#0B2265", img:"images/4689114.avif"},
+  {n:"Geno Smith",       t:"Jets",       ab:"NYJ", id:"15864",   c:"#125740", img:"images/15864.png"},
+  {n:"Jalen Hurts",      t:"Eagles",     ab:"PHI", id:"4040715", c:"#004C54", img:"images/4040715.png"},
+  {n:"Aaron Rodgers",    t:"Steelers",   ab:"PIT", id:"8439",    c:"#b9890d", img:"images/8439.png"},
+  {n:"Sam Darnold",      t:"Seahawks",   ab:"SEA", id:"3912547", c:"#002244", img:"images/3912547.png"},
+  {n:"Brock Purdy",      t:"49ers",      ab:"SF",  id:"4361741", c:"#AA0000", img:"images/4361741.png"},
+  {n:"Baker Mayfield",   t:"Buccaneers", ab:"TB",  id:"3052587", c:"#D50A0A", img:"images/3052587.png"},
+  {n:"Cam Ward",         t:"Titans",     ab:"TEN", id:"4688380", c:"#4B92DB", img:"images/4688380.png"},
+  {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414", img:"images/4426348.png"},
 ];
 const PHOTO = id => `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
 const imgURL = q => q.img || PHOTO(q.id);   // q.img overrides the default ESPN headshot
