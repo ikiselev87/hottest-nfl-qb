@@ -165,12 +165,13 @@
 <!-- Final results -->
 <div class="overlay" id="results">
   <div class="board">
-    <h2>🔥 Your Hottest QB — Top 5</h2>
+    <h2 id="resultsTitle">🔥 Your Hottest QB — Top 5</h2>
     <p class="sub" id="resultsSub"></p>
     <div id="podium"></div>
     <div class="actions">
       <button class="btn" id="copyBtn">📋 Copy results</button>
-      <button class="btn primary" id="playAgainBtn">Play again</button>
+      <button class="btn" id="playAgainBtn">Play again</button>
+      <button class="btn primary" id="bonusBtn">🏈 Bonus round →</button>
     </div>
   </div>
 </div>
@@ -213,33 +214,57 @@ const QBS = [
   {n:"Cam Ward",         t:"Titans",     ab:"TEN", id:"4688380", c:"#4B92DB", img:"images/4688380.png"},
   {n:"Jayden Daniels",   t:"Commanders", ab:"WAS", id:"4426348", c:"#5A1414", img:"images/4426348.png"},
 ];
+
+/* ---------- bonus round pool (non-QB players added to the folder) ---------- */
+const BONUS = [
+  {n:"Cam Newton",          t:"Panthers",   ab:"QB", id:"cam-newton",          c:"#0085CA", img:"images/bonus/cam-newton.png"},
+  {n:"Christian McCaffrey", t:"49ers",      ab:"RB", id:"christian-mccaffrey", c:"#AA0000", img:"images/bonus/christian-mccaffrey.png"},
+  {n:"Jimmy Garoppolo",     t:"49ers",      ab:"QB", id:"jimmy-garoppolo",     c:"#AA0000", img:"images/bonus/jimmy-garoppolo.png"},
+  {n:"Jonathan Owens",      t:"Bears",      ab:"S",  id:"jonathan-owens",      c:"#0B162A", img:"images/bonus/jonathan-owens.png"},
+  {n:"Mark Sanchez",        t:"Jets",       ab:"QB", id:"mark-sanchez",        c:"#125740", img:"images/bonus/mark-sanchez.png"},
+  {n:"Nick Bosa",           t:"49ers",      ab:"DE", id:"nick-bosa",           c:"#AA0000", img:"images/bonus/nick-bosa.png"},
+  {n:"Sam Hartman",         t:"Commanders", ab:"QB", id:"sam-hartman",         c:"#5A1414", img:"images/bonus/sam-hartman.png"},
+  {n:"Saquon Barkley",      t:"Eagles",     ab:"RB", id:"saquon-barkley",      c:"#004C54", img:"images/bonus/saquon-barkley.png"},
+  {n:"Tom Brady",           t:"G.O.A.T.",   ab:"QB", id:"tom-brady",           c:"#B0985E", img:"images/bonus/tom-brady.png"},
+  {n:"Danny Amendola",      t:"Patriots",   ab:"WR", id:"danny-amendola",      c:"#002244", img:"images/bonus/danny-amendola.png"},
+  {n:"Julian Edelman",      t:"Patriots",   ab:"WR", id:"julian-edelman",      c:"#002244", img:"images/bonus/julian-edelman.jpg"},
+];
+
+let POOL = QBS;   // active pool: QBS for the main game, BONUS for the bonus round
 const PHOTO = id => `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
 const imgURL = q => q.img || PHOTO(q.id);   // q.img overrides the default ESPN headshot
-const byId = id => QBS.find(q=>q.id===id);
+const byId = id => POOL.find(q=>q.id===id);
 const initials = n => n.split(" ").map(w=>w[0]).slice(0,2).join("");
 const MAX_FINALISTS = 8;   // cap the playoff pool so the Finals stay short
 
 /* ---------- state ---------- */
-const STORE = "qbHotRanker.v3";
+const STORE = "qbHotRanker.v4";
 let state;
 
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
 
-function fresh(){
-  const order = shuffle(QBS.map(q=>q.id));
+function poolFor(round){ return round==="bonus" ? BONUS : QBS; }
+
+function fresh(round){
+  round = round || "main";
+  POOL = poolFor(round);
+  const order = shuffle(POOL.map(q=>q.id));
   const champ = order.shift(), challenger = order.shift();
   return {
-    phase:"gauntlet",
+    round, phase:"gauntlet",
     queue:order, champ, challenger,
-    wins:Object.fromEntries(QBS.map(q=>[q.id,0])),
-    losses:Object.fromEntries(QBS.map(q=>[q.id,0])),
+    wins:Object.fromEntries(POOL.map(q=>[q.id,0])),
+    losses:Object.fromEntries(POOL.map(q=>[q.id,0])),
     finals:null, podium:[], votes:0
   };
 }
 function load(){
   try{ const s=JSON.parse(localStorage.getItem(STORE));
-       if(s && s.wins && Object.keys(s.wins).length===QBS.length && s.phase) return s; }catch(e){}
-  return fresh();
+       if(s && s.wins && s.phase){
+         POOL = poolFor(s.round);
+         if(Object.keys(s.wins).length===POOL.length) return s;
+       } }catch(e){}
+  return fresh("main");
 }
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
 
@@ -265,25 +290,28 @@ function renderMatch(){
   right.className="pick"; right.innerHTML=cardHTML(R);
 
   const isFinals = state.phase==="finals";
+  const isBonus = state.round==="bonus";
+  const pre = isBonus ? "Bonus · " : "";
+  const noun = isBonus ? "player" : "QB";
   const tag=document.getElementById("phaseTag");
   if(isFinals){
     tag.className="phase finals";
-    tag.textContent=`Finals · deciding #${state.podium.length+1}`;
+    tag.textContent=`${pre}Finals · deciding #${state.podium.length+1}`;
     document.getElementById("hint").innerHTML="Final round! Keep the hotter one up to lock in each spot in your Top 5.";
   } else {
     tag.className="phase";
-    const seen = QBS.length - state.queue.length;
-    tag.textContent=`The Gauntlet · ${seen}/${QBS.length}`;
-    document.getElementById("hint").innerHTML="Every QB appears <b>once</b>. The hotter one stays up; the loser is out. Winners advance to the Finals.";
+    const seen = POOL.length - state.queue.length;
+    tag.textContent=`${pre}The Gauntlet · ${seen}/${POOL.length}`;
+    document.getElementById("hint").innerHTML=`Every ${noun} appears <b>once</b>. The hotter one stays up; the loser is out. Winners advance to the Finals.`;
   }
   // progress
   let pct;
   if(isFinals){ pct = 60 + 40*(state.podium.length/5); }
-  else { pct = 60*((QBS.length - state.queue.length)/QBS.length); }
+  else { pct = 60*((POOL.length - state.queue.length)/POOL.length); }
   document.getElementById("pbarFill").style.width = Math.min(100,pct)+"%";
   document.getElementById("progressStat").innerHTML = isFinals
-    ? `Finals · <b>${state.podium.length}</b>/5 locked`
-    : `Seen <b>${QBS.length - state.queue.length}</b>/${QBS.length}`;
+    ? `${pre}Finals · <b>${state.podium.length}</b>/5 locked`
+    : `${pre}Seen <b>${POOL.length - state.queue.length}</b>/${POOL.length}`;
 }
 function flashThenRender(side){
   document.getElementById(side).classList.add("flash");
@@ -306,7 +334,7 @@ function gauntletVote(side){
 
 /* ---------- transition ---------- */
 function finalistPool(){
-  return QBS.filter(q=>state.wins[q.id]>0)
+  return POOL.filter(q=>state.wins[q.id]>0)
             .sort((a,b)=>state.wins[b.id]-state.wins[a.id])
             .slice(0,MAX_FINALISTS)
             .map(q=>q.id);
@@ -372,6 +400,12 @@ function finishGame(){
 }
 function showResults(){
   const medal=["gold","silver","bronze"];
+  const isBonus = state.round==="bonus";
+  document.getElementById("resultsTitle").textContent = isBonus
+    ? "🌟 Bonus Round — Hottest Top 5"
+    : "🔥 Your Hottest QB — Top 5";
+  document.getElementById("bonusBtn").style.display = isBonus ? "none" : "";
+  document.getElementById("playAgainBtn").textContent = isBonus ? "Replay bonus" : "Replay main";
   document.getElementById("resultsSub").innerHTML =
     `Ranked from <b>${state.finals.pool.length+state.podium.length}</b> finalists across <b>${state.votes}</b> picks.`;
   document.getElementById("podium").innerHTML = state.podium.map((id,i)=>{
@@ -386,7 +420,8 @@ function showResults(){
   document.getElementById("results").classList.add("open");
 }
 function copyResults(){
-  const txt = "🔥 My Hottest NFL QB Top 5:\n" +
+  const header = state.round==="bonus" ? "🌟 My Bonus Round Top 5:" : "🔥 My Hottest NFL QB Top 5:";
+  const txt = header + "\n" +
     state.podium.map((id,i)=>`${i+1}. ${byId(id).n} (${byId(id).ab})`).join("\n");
   navigator.clipboard?.writeText(txt).then(
     ()=>{ const b=document.getElementById("copyBtn"); b.textContent="✓ Copied!"; setTimeout(()=>b.textContent="📋 Copy results",1500); },
@@ -410,12 +445,16 @@ document.getElementById("startFinalsBtn").addEventListener("click", startFinals)
 document.getElementById("copyBtn").addEventListener("click", copyResults);
 document.getElementById("playAgainBtn").addEventListener("click", ()=>{
   document.getElementById("results").classList.remove("open");
-  state=fresh(); save(); renderMatch();
+  state=fresh(state.round); save(); renderMatch();   // replay the current round
+});
+document.getElementById("bonusBtn").addEventListener("click", ()=>{
+  document.getElementById("results").classList.remove("open");
+  state=fresh("bonus"); save(); renderMatch();        // start the bonus round
 });
 document.getElementById("resetBtn").addEventListener("click", ()=>{
-  if(confirm("Start over from the beginning?")){
+  if(confirm("Start over from the main game?")){
     document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("open"));
-    state=fresh(); save(); renderMatch();
+    state=fresh("main"); save(); renderMatch();
   }
 });
 
